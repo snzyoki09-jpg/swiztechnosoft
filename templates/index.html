@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}SwizBarberQue | Guest Booking{% endblock %}
+{% block content %}
+<section class="hero">
+  <h2>Welcome to SwizBarberQue Hotel Management System</h2>
+  <p>Book comfortable rooms in Tononoka, Mombasa with real-time availability.</p>
+</section>
+
+<section class="grid">
+  <article class="card">
+    <h3>Available Rooms</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Room</th>
+          <th>Type</th>
+          <th>Price/Night (KES)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for room in rooms %}
+          <tr>
+            <td>{{ room.room_number }}</td>
+            <td>{{ room.room_type }}</td>
+            <td>{{ '%.0f'|format(room.price_per_night) }}</td>
+            <td>
+              <span class="badge {{ room.status }}">{{ room.status|capitalize }}</span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+
+  <article class="card">
+    <h3>Make a Reservation</h3>
+    <form method="post" action="{{ url_for('book_room') }}" class="form-grid">
+      <label>Guest Name <input type="text" name="guest_name" required /></label>
+      <label>Email <input type="email" name="guest_email" required /></label>
+      <label>Phone <input type="text" name="phone" required /></label>
+      <label>
+        Select Room
+        <select name="room_id" required>
+          <option value="">Choose a room</option>
+          {% for room in rooms if room.status == 'available' %}
+            <option value="{{ room.id }}">
+              Room {{ room.room_number }} - {{ room.room_type }} (KES {{ '%.0f'|format(room.price_per_night) }})
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Check-in <input type="date" name="check_in" required /></label>
+      <label>Check-out <input type="date" name="check_out" required /></label>
+      <label>Number of Guests <input type="number" name="guests" min="1" max="8" required /></label>
+      <label class="full-width">Special Request <textarea name="special_request" rows="3"></textarea></label>
+      <button type="submit">Book Now</button>
+    </form>
+  </article>
+</section>
+{% endblock %}
